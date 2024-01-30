@@ -223,7 +223,7 @@ public class AccountDAO {
                 message = null;
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            //handle exception
             System.out.println(e.getMessage());
         }
         return message;
