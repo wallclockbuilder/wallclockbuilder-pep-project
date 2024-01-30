@@ -3,11 +3,15 @@ package Controller;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.sql.SQLException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
 import Service.AccountService;
+import Model.Message;
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
  * found in readme.md as well as the test cases. You should
@@ -28,6 +32,9 @@ public class SocialMediaController {
         app.get("example-endpoint", this::exampleHandler);
         // ## 1: Our API should be able to process new User registrations.
         app.post("register", this::postAccountHandler);
+        app.post("login", this::postLoginHandler);
+        app.post("messages", this::postMessagesHandler);
+                    
         return app;
     }
 
@@ -56,6 +63,50 @@ public class SocialMediaController {
             ctx.status(400);
         } else{
             ctx.json(om.writeValueAsString(addedAccount));
+        }
+    }
+        //## 2: Our API should be able to process User logins.
+
+                    // As a user, I should be able to verify my login on the endpoint POST localhost:8080/login.
+
+            //  The request body will contain a JSON representation of an Account, not containing an account_id.
+
+            // - The login will be successful if and only if the username and password provided in the request body
+            //  JSON match a real account existing on the database. If successful, the response body should contain a
+            //  JSON of the account in the response body, including its account_id. The response status should be 200 OK,
+            //  which is the default.
+            // - If the login is not successful, the response status should be 401. (Unauthorized)  
+    private void postLoginHandler(Context ctx) throws JsonProcessingException, SQLException{
+        ObjectMapper om = new ObjectMapper();
+        Account account = om.readValue(ctx.body(), Account.class);
+        Account verifiedAccount = accountService.verifyLogin(account);
+        if(verifiedAccount == null){
+            ctx.status(401);
+        }else{
+            ctx.json(om.writeValueAsString(verifiedAccount));
+        }
+    }
+
+
+    //         ## 3: Our API should be able to process the creation of new messages.
+
+    // As a user, I should be able to submit a new post on the endpoint POST localhost:8080/messages. 
+    // The request body will contain a JSON representation of a message, which should be persisted 
+    // to the database, but will not contain a message_id.
+
+    // If successful, 
+    // the response body should contain a JSON of the message, including its message_id. The response 
+    // status should be 200, which is the default. The new message should be persisted to the database.
+    // - If the creation of the message is not successful, the response status should be 400. 
+    // (Client error)
+    private void postMessagesHandler(Context ctx) throws JsonMappingException, JsonProcessingException, SQLException{
+        ObjectMapper om = new ObjectMapper();
+        Message message = om.readValue(ctx.body(), Message.class);
+        Message addedMessage = accountService.createMessage(message);
+        if(addedMessage == null){
+            ctx.status(400);
+        }else{
+            ctx.json(om.writeValueAsString(addedMessage));
         }
     }
 

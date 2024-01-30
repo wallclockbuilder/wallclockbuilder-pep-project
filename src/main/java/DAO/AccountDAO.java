@@ -8,12 +8,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import Model.Account;
+import Model.Message;
 import Util.ConnectionUtil;
 
 public class AccountDAO {
 
     public Account insertAccount(Account account) {
         Connection connection = ConnectionUtil.getConnection();
+
         try {
             //Write SQL logic here. When inserting, you only need to define the departure_city and arrival_city
             //values (two columns total!)
@@ -35,5 +37,73 @@ public class AccountDAO {
         }
         return null;
     }
+
+    public Account verifyLogin(Account account) throws SQLException {
+        Connection connection = ConnectionUtil.getConnection();
+
+        try {
+            String sql = "SELECT * FROM account WHERE username=? AND password=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, account.getUsername());
+            preparedStatement.setString(2, account.getPassword());
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                int account_id = rs.getInt("account_id");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                Account verifiedAccount = new Account(account_id, username, password);
+                return verifiedAccount;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return null;
+    }
+
+    public Account findAccountByPosterId(int poster_id)throws SQLException{
+        Connection connection = ConnectionUtil.getConnection();
+
+        try {
+            String sql = "SELECT * FROM account WHERE account_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, poster_id);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                Account account = new Account(rs.getInt("account_id"), rs.getString("username"), rs.getString("password"));
+                return account;
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println(e.getMessage());
+
+        }
+        
+        return null;
+    }
     
+
+    public Message insertMessage(Message message) throws SQLException {
+        Connection connection = ConnectionUtil.getConnection();
+
+        try {
+            String sql = "INSERT INTO message(posted_by, message_text, time_posted_epoch) VALUES(?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, message.getPosted_by());
+            preparedStatement.setString(2, message.getMessage_text());
+            preparedStatement.setLong(3, message.getTime_posted_epoch());
+            preparedStatement.executeUpdate();
+            ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
+            if(pkeyResultSet.next()){
+                int generated_account_id =  pkeyResultSet.getInt(1);
+                return new Message(generated_account_id, message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println(e.getMessage());
+
+        }
+        
+        return null;
+    }
 }

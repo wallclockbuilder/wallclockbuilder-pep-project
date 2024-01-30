@@ -1,6 +1,9 @@
 package Service;
+import java.sql.SQLException;
+
 import DAO.AccountDAO;
 import Model.Account;
+import Model.Message;
 
 public class AccountService {
     AccountDAO accountDAO;
@@ -31,6 +34,25 @@ public class AccountService {
             return this.accountDAO.insertAccount(account);
         }else{
             return null;
+        }
+    }
+
+    public Account verifyLogin(Account account) throws SQLException {
+        Account verifiedAccount = this.accountDAO.verifyLogin(account);
+        return verifiedAccount;
+    }
+    
+    // - The creation of the message will be successful if and only if the message_text is not blank, 
+    // is not over 255 characters, and posted_by refers to a real, existing user.
+    public Message createMessage(Message message) throws SQLException{
+        int posted_by = message.getPosted_by();
+        Account posters_account = this.accountDAO.findAccountByPosterId(posted_by);
+
+        if(message.getMessage_text() == "" || message.getMessage_text().length() > 255 || posters_account == null){
+            return null;
+        } else {
+            Message createdMessage = this.accountDAO.insertMessage(message);
+            return createdMessage;
         }
     }
 
