@@ -37,6 +37,7 @@ public class SocialMediaController {
         app.get("/messages/{message_id}", this::getMessageByMessageId);
         app.delete("/messages/{message_id}", this::deleteMessageByMessageId);
         app.patch("/messages/{message_id}", this::updateMessageByMessageId);
+        app.get("/accounts/{account_id}/messages", this::getMessagesByAccountId);
         return app;
     }
 
@@ -179,5 +180,16 @@ private void deleteMessageByMessageId(Context ctx){
         }else{
             ctx.json(updated_message);
         }
+    }
+
+//     # 8: Our API should be able to retrieve all messages written by a particular user.
+
+// As a user, I should be able to submit a GET request on the endpoint GET localhost:8080/accounts/{account_id}/messages.
+// - The response body should contain a JSON representation of a list containing all messages posted by a particular user,
+//  which is retrieved from the database. It is expected for the list to simply be empty if there are no messages. 
+// The response status should always be 200, which is the default.
+    private void getMessagesByAccountId(Context ctx){
+        int account_id =Integer.valueOf(ctx.pathParam("account_id"));
+        ctx.json(accountService.getMessagesByAccountId(account_id));
     }
 }

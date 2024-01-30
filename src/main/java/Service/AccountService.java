@@ -73,4 +73,8 @@ public class AccountService {
         return this.accountDAO.deleteMessageByMessageId(message_id);
     }
 
+    public List<Message> getMessagesByAccountId(int account_id) {
+        return this.accountDAO.getMessageByAccountId(account_id);
+    }
+
 }
