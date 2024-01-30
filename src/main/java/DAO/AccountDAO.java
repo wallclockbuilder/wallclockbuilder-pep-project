@@ -76,7 +76,7 @@ public class AccountDAO {
                 return account;
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            // handle exception
             System.out.println(e.getMessage());
 
         }
@@ -101,7 +101,7 @@ public class AccountDAO {
                 return new Message(generated_account_id, message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            // handle exception
             System.out.println(e.getMessage());
 
         }
@@ -126,9 +126,33 @@ public class AccountDAO {
                 messages.add(foundMessage);
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            // handle exception
             System.out.println(e.getMessage());
         }
         return messages;
+    }
+
+    public Message getMessageById(int message_id) {
+        Connection connection = ConnectionUtil.getConnection();
+        Message message = null;
+        try {
+            String sql = "SELECT * FROM message WHERE message_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, message_id);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                message = new Message(
+                    rs.getInt("message_id"),
+                    rs.getInt("posted_by"),
+                    rs.getString("message_text"),
+                    rs.getLong("time_posted_epoch")
+                    );
+            }
+        } catch (Exception e) {
+            // handle exception
+            System.out.println(e.getMessage());
+
+        }
+        return message;
     }
 }

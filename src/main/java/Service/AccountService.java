@@ -61,4 +61,8 @@ public class AccountService {
         return this.accountDAO.getAllMessages();
     }
 
+    public Message getMessageByMessageId(int message_id) {
+        return this.accountDAO.getMessageById(message_id);
+    }
+
 }
