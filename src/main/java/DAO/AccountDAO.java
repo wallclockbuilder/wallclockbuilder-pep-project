@@ -155,4 +155,39 @@ public class AccountDAO {
         }
         return message;
     }
+
+    public Message deleteMessageByMessageId(int message_id) {
+        Message message = null;
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String sql1 = "SELECT * FROM message WHERE message.message_id = ?";
+            PreparedStatement preparedStatement1 = connection.prepareStatement(sql1);
+            preparedStatement1.setInt(1, message_id);
+            ResultSet rs = preparedStatement1.executeQuery();
+            while(rs.next()){
+                message = new Message(
+                    rs.getInt("message_id"),
+                    rs.getInt("posted_by"),
+                    rs.getString("message_text"),
+                    rs.getLong("time_posted_epoch")
+                );
+            }
+
+            String sql2 = "DELETE FROM message WHERE message.message_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql2);
+            preparedStatement.setInt(1, message_id);
+            int row_count = preparedStatement.executeUpdate();
+
+
+            if(row_count == 0){
+                message = null;
+            }
+            
+        } catch (Exception e) {
+            // handle exception
+            System.out.println(e.getMessage());
+
+        }
+        return message;
+    }
 }

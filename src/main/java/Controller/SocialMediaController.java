@@ -35,6 +35,7 @@ public class SocialMediaController {
         app.post("messages", this::postMessagesHandler);
         app.get("messages", this::getMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageByMessageId);
+        app.delete("/messages/{message_id}", this::deleteMessageByMessageId);
         return app;
     }
 
@@ -136,4 +137,23 @@ public class SocialMediaController {
             ctx.json(message);
         }
     }
+
+//     ## 6: Our API should be able to delete a message identified by a message ID.
+
+// As a User, I should be able to submit a DELETE request on the endpoint DELETE localhost:8080/messages/{message_id}.
+
+// - The deletion of an existing message should remove an existing message from the database. If the message existed, 
+// the response body should contain the now-deleted message. The response status should be 200, which is the default.
+// - If the message did not exist, the response status should be 200, but the response body should be empty. This is 
+// because the DELETE verb is intended to be idempotent, ie, multiple calls to the DELETE endpoint should respond 
+// with the same type of response.
+private void deleteMessageByMessageId(Context ctx){
+    int message_id = Integer.valueOf(ctx.pathParam("message_id"));
+    Message message = accountService.deleteMessageByMessageId(message_id);
+    if(message == null){
+        ctx.status(200);
+    }else{
+        ctx.json(message);
+    }
+}
 }
