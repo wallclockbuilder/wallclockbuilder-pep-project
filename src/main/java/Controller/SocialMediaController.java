@@ -30,11 +30,11 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.get("example-endpoint", this::exampleHandler);
-        // ## 1: Our API should be able to process new User registrations.
         app.post("register", this::postAccountHandler);
         app.post("login", this::postLoginHandler);
         app.post("messages", this::postMessagesHandler);
-                    
+        app.get("messages", this::getMessagesHandler);
+
         return app;
     }
 
@@ -108,6 +108,18 @@ public class SocialMediaController {
         }else{
             ctx.json(om.writeValueAsString(addedMessage));
         }
+    }
+
+    // ## 4: Our API should be able to retrieve all messages.
+
+    // As a user, I should be able to submit a GET request on the endpoint GET localhost:8080/messages.
+
+    // - The response body should contain a JSON representation of a list containing all messages retrieved 
+    // from the database. It is expected for the list to simply be empty if there are no messages. 
+    // The response status should always be 200, which is the default.
+    private void getMessagesHandler(Context ctx){
+        ctx.json(accountService.getAllMessages());
+    
     }
 
 }

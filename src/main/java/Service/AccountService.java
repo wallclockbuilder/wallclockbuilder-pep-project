@@ -1,5 +1,6 @@
 package Service;
 import java.sql.SQLException;
+import java.util.List;
 
 import DAO.AccountDAO;
 import Model.Account;
@@ -54,6 +55,10 @@ public class AccountService {
             Message createdMessage = this.accountDAO.insertMessage(message);
             return createdMessage;
         }
+    }
+
+    public List<Message> getAllMessages() {
+        return this.accountDAO.getAllMessages();
     }
 
 }
