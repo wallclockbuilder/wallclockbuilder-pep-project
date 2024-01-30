@@ -157,6 +157,8 @@ public class AccountDAO {
     }
 
     public Message deleteMessageByMessageId(int message_id) {
+        //fetch message 
+        //then delete message
         Message message = null;
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -187,6 +189,42 @@ public class AccountDAO {
             // handle exception
             System.out.println(e.getMessage());
 
+        }
+        return message;
+    }
+
+    public Message updateMessageById(int message_id, Message new_message) {
+       
+        Message message = null;
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+             //update message
+             //then fetch message
+            String sql1 = "UPDATE message SET message_text = ? WHERE message.message_id = ?";
+            PreparedStatement preparedStatement1 = connection.prepareStatement(sql1);
+            preparedStatement1.setString(1, new_message.getMessage_text());
+            preparedStatement1.setInt(2, message_id);
+            int row_count = preparedStatement1.executeUpdate();
+
+            String sql2 = "SELECT * FROM message WHERE message.message_id = ?";
+            PreparedStatement preparedStatement2 = connection.prepareStatement(sql2);
+            preparedStatement2.setInt(1, message_id);
+            ResultSet rs = preparedStatement2.executeQuery();
+            while(rs.next()){
+                message = new Message(
+                    rs.getInt("message_id"),
+                    rs.getInt("posted_by"),
+                    rs.getString("message_text"),
+                    rs.getLong("time_posted_epoch")
+                );
+            }
+            
+            if(row_count == 0){
+                message = null;
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println(e.getMessage());
         }
         return message;
     }

@@ -65,8 +65,12 @@ public class AccountService {
         return this.accountDAO.getMessageById(message_id);
     }
 
+    public Message updateMessageByMessageId(int message_id, Message new_message) {
+        return this.accountDAO.updateMessageById(message_id, new_message);
+    }
+
     public Message deleteMessageByMessageId(int message_id) {
-        return accountDAO.deleteMessageByMessageId(message_id);
+        return this.accountDAO.deleteMessageByMessageId(message_id);
     }
 
 }
